@@ -1,10 +1,10 @@
-# sonic-bridge
+# @don-erfan/sonic-bridge
 
 **Send short data between devices over sound.** No internet, no server, no Bluetooth, no shared Wi‑Fi:
 one device plays a short burst of tones, the other decodes it from its microphone.
 
 ```tsx
-import { useSonicReceiver, useSonicTransmitter } from "sonic-bridge/react";
+import { useSonicReceiver, useSonicTransmitter } from "@don-erfan/sonic-bridge/react";
 
 function SendCode() {
   const { transmit, status } = useSonicTransmitter();
@@ -33,16 +33,16 @@ Typical uses: OTP hand-off from phone to laptop, device pairing, kiosk ↔ phone
 ## Install
 
 ```bash
-npm install sonic-bridge
+npm install @don-erfan/sonic-bridge
 ```
 
 One package, three entry points — import only what you use:
 
-| Import                 | What it is                                                                                                                                                        |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sonic-bridge`         | Framework-agnostic: `SonicTransmitter` / `SonicReceiver` (Web Audio, microphone, AudioWorklet) and the engine (`SonicEncoder` / `SonicDecoder`). No dependencies. |
-| `sonic-bridge/react`   | React hooks: `useSonicTransmitter`, `useSonicReceiver`, optional `SonicBridgeProvider`. React ≥ 18 is an optional peer dependency.                                |
-| `sonic-bridge/testing` | Deterministic acoustic-channel simulator for your own tests.                                                                                                      |
+| Import                            | What it is                                                                                                                                                        |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@don-erfan/sonic-bridge`         | Framework-agnostic: `SonicTransmitter` / `SonicReceiver` (Web Audio, microphone, AudioWorklet) and the engine (`SonicEncoder` / `SonicDecoder`). No dependencies. |
+| `@don-erfan/sonic-bridge/react`   | React hooks: `useSonicTransmitter`, `useSonicReceiver`, optional `SonicBridgeProvider`. React ≥ 18 is an optional peer dependency.                                |
+| `@don-erfan/sonic-bridge/testing` | Deterministic acoustic-channel simulator for your own tests.                                                                                                      |
 
 The package ships no UI — you render your own buttons and states; the hooks expose everything needed to drive them.
 ESM + CommonJS, full type definitions, tree-shakable, SSR-safe.
@@ -52,7 +52,7 @@ ESM + CommonJS, full type definitions, tree-shakable, SSR-safe.
 ### React
 
 ```tsx
-import { SonicBridgeProvider } from "sonic-bridge/react";
+import { SonicBridgeProvider } from "@don-erfan/sonic-bridge/react";
 
 <SonicBridgeProvider band="audible" speed="normal">
   {" "}
@@ -85,7 +85,7 @@ rejections. Call both from a click/tap handler — browsers only start audio and
 ### Any framework / vanilla
 
 ```ts
-import { SonicReceiver, SonicTransmitter } from "sonic-bridge";
+import { SonicReceiver, SonicTransmitter } from "@don-erfan/sonic-bridge";
 
 const message = await new SonicReceiver().listen({ timeout: 30_000 });
 if (message.type === "digits") fillOtp(message.value);
@@ -99,7 +99,7 @@ Both classes expose `subscribe` / `getSnapshot` (works with Vue, Svelte, Solid, 
 ### Engine only (no audio I/O)
 
 ```ts
-import { SonicDecoder, SonicEncoder, toMessage } from "sonic-bridge";
+import { SonicDecoder, SonicEncoder, toMessage } from "@don-erfan/sonic-bridge";
 
 const { samples, duration } = new SonicEncoder(48_000).encode("482193");
 const decoder = new SonicDecoder(44_100);
@@ -136,9 +136,9 @@ if (SonicError.is(error, "audio/permission-denied")) showPermissionHelp();
 ## How it works
 
 ```
- ┌── src/react   → sonic-bridge/react ──┐   hooks over useSyncExternalStore
- ├── src/web     → sonic-bridge ────────┤   AudioContext · getUserMedia · AudioWorklet
- └── src/core    → sonic-bridge ────────┘   pure TypeScript, no DOM
+ ┌── src/react → @don-erfan/sonic-bridge/react ──┐   hooks over useSyncExternalStore
+ ├── src/web   → @don-erfan/sonic-bridge ────────┤   AudioContext · getUserMedia · AudioWorklet
+ └── src/core  → @don-erfan/sonic-bridge ────────┘   pure TypeScript, no DOM
 
  encode:  payload → frame (header + body, CRC‑16, Reed–Solomon) → 4‑bit symbols → 16‑FSK tones
  air:     [lead‑in][chirp 120 ms][gap][header 12 symbols][body N symbols][tail]
@@ -197,7 +197,7 @@ and encrypt/authenticate sensitive payloads before transmitting.
 
 ## Reliability
 
-`pnpm bench` runs a Monte-Carlo benchmark through the channel simulator (`sonic-bridge/testing`): random 6-digit
+`pnpm bench` runs a Monte-Carlo benchmark through the channel simulator (`@don-erfan/sonic-bridge/testing`): random 6-digit
 codes, white noise, reverberation, attenuation, 44.1/48 kHz mismatch and ±100 ppm clock drift. In the "room" model
 every profile decodes 100 % of trials down to 0 dB SNR; with deliberately harsh, equally loud echoes `fast` drops to
 ~93–97 % while `normal`/`robust` stay at 100 %.

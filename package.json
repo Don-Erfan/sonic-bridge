@@ -1,5 +1,5 @@
 {
-  "name": "sonic-bridge",
+  "name": "@don-erfan/sonic-bridge",
   "version": "1.0.0",
   "description": "Send short data between devices over sound \u2014 no network, Bluetooth or pairing. Framework-agnostic engine with React hooks.",
   "license": "MIT",

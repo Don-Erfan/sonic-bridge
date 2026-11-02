@@ -1,6 +1,6 @@
 /**
  * Deterministic acoustic-channel simulator for tests and benchmarks.
- * Exposed as `sonic-bridge/testing`.
+ * Exposed as `@don-erfan/sonic-bridge/testing`.
  */
 export interface Echo {
   readonly delay: number; // seconds

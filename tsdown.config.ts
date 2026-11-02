@@ -12,5 +12,5 @@ export default defineConfig({
   clean: true,
   target: "es2022",
   platform: "neutral",
-  external: ["react", "react/jsx-runtime"],
+  deps: { neverBundle: ["react", "react/jsx-runtime"] },
 });
