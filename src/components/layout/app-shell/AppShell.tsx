@@ -2,6 +2,7 @@ import React, { FC, PropsWithChildren } from 'react';
 import { uiText } from '@/config';
 import { AppHeader } from '../app-header';
 import { BottomNav } from '../bottom-nav';
+import { PushSync } from '../../pwa';
 import { OfflineBanner } from '../offline-banner';
 import { SideNav } from '../side-nav';
 import { IAppShellProps } from './interface';
@@ -9,7 +10,8 @@ import { IAppShellProps } from './interface';
 /**
  * Page frame of the signed-in app, mobile first: sticky header, content
  * column and a bottom tab bar on phones; a side rail replaces the tab bar
- * from `lg` up. Starts with a skip link for keyboard users.
+ * from `lg` up. Starts with a skip link for keyboard users. Also keeps the
+ * device's push notifications in step with who is signed in (`PushSync`).
  *
  * @example
  * <AppShell>{children}</AppShell>
@@ -37,6 +39,7 @@ export const AppShell: FC<PropsWithChildren<IAppShellProps>> = ({
       </main>
     </div>
     <BottomNav />
+    <PushSync />
   </div>
 );
 

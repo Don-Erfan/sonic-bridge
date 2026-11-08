@@ -1,9 +1,11 @@
 import { AdminService } from '../admin/admin.service';
+import { AnnouncementService } from '../announcements/announcements.service';
 import { AttendanceService } from '../attendance/attendance.service';
 import { AuthService } from '../auth/auth.service';
 import { EventService } from '../events/events.service';
 import { MoodService } from '../mood/mood.service';
 import { ProfileService } from '../profile/profile.service';
+import { PushService } from '../push/push.service';
 import { RoomService } from '../rooms/rooms.service';
 import { StaffService } from '../staff/staff.service';
 import { CompositeStatusSync } from '../status-sync/composite';
@@ -24,6 +26,8 @@ export class HttpServiceFactory implements IServiceFactory {
   createEventService = () => new EventService();
   createMoodService = () => new MoodService();
   createAdminService = () => new AdminService();
+  createPushService = () => new PushService();
+  createAnnouncementService = () => new AnnouncementService();
   createStatusSync = () =>
     new CompositeStatusSync(`status-sync`, [new MattermostSyncTarget()]);
 }

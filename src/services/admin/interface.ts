@@ -1,5 +1,6 @@
 import type { TEventCategory } from '@/lib/events';
 import type { TProductCategory } from '@/lib/store';
+import type { IAnnouncement } from '../announcements/interface';
 import type { ICompanyEvent } from '../events/interface';
 import type { TStaffRole } from '../profile/interface';
 import type { TRoomAmenity } from '../rooms/interface';
@@ -146,6 +147,20 @@ export interface IEventPayload {
  * envelope `code` (`username_taken`, `negative_balance`, …) and a Persian
  * `detail` to show as-is.
  */
+/** Body of `POST /admin/announcements`. */
+export interface IAnnouncementPayload {
+  /** At most 80 characters: shown as the notification's title. */
+  title: string;
+  /** At most 500 characters. */
+  body: string;
+}
+
+/** A sent announcement and how many browsers it is being pushed to. */
+export interface IAnnouncementSent {
+  announcement: IAnnouncement;
+  devices: number;
+}
+
 export interface IAdminService {
   getStaff(): Promise<IAdminStaff[]>;
   createStaff(payload: ICreateStaffPayload): Promise<IAdminStaff>;
@@ -190,4 +205,8 @@ export interface IAdminService {
   createEvent(payload: IEventPayload): Promise<ICompanyEvent>;
   updateEvent(id: string, payload: IEventPayload): Promise<ICompanyEvent>;
   deleteEvent(id: string): Promise<void>;
+  /** `POST /admin/announcements` — saved, then pushed to everyone (`announcements`). */
+  sendAnnouncement(payload: IAnnouncementPayload): Promise<IAnnouncementSent>;
+  /** `DELETE /admin/announcements/:id` — removes it from the list. */
+  deleteAnnouncement(id: string): Promise<void>;
 }

@@ -19,6 +19,11 @@ import {
  * scroll lock, Escape, swipe-down to dismiss from the handle / header) with
  * a soft-UI panel. The app's default container for forms and pickers.
  *
+ * Opened from state, never by a trigger button, so the open state goes on
+ * the backdrop (React Aria's `ModalOverlay`) and the `Drawer` root is left
+ * out: that root is a `DialogTrigger`, which warns ("PressResponder was
+ * rendered without a pressable child") when it has no trigger to wrap.
+ *
  * @example
  * <Sheet title="رزرو البرز" isOpen={isOpen} onOpenChange={setOpen} footer={<Button isFullWidth>رزرو</Button>}>
  *   …
@@ -33,38 +38,36 @@ export const Sheet: FC<ISheetProps> = ({
   isDismissable = true,
   closeLabel = uiText.close,
 }) => (
-  <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
-    <Drawer.Backdrop
-      variant="opaque"
-      isDismissable={isDismissable}
-      isKeyboardDismissDisabled={!isDismissable}
-      className={sheetBackdropStyles}
-    >
-      <Drawer.Content placement="bottom">
-        <Drawer.Dialog className={sheetDialogStyles}>
-          <Drawer.Handle className={sheetHandleStyles} />
-          <Drawer.Header className={sheetHeaderStyles}>
-            <Drawer.Heading className={sheetHeadingStyles}>
-              {title}
-            </Drawer.Heading>
-            <IconButton
-              slot="close"
-              icon="close"
-              size="sm"
-              aria-label={closeLabel}
-              isDisabled={!isDismissable}
-            />
-          </Drawer.Header>
-          <Drawer.Body className={sheetBodyStyles}>{children}</Drawer.Body>
-          {footer && (
-            <Drawer.Footer className={sheetFooterStyles}>
-              {footer}
-            </Drawer.Footer>
-          )}
-        </Drawer.Dialog>
-      </Drawer.Content>
-    </Drawer.Backdrop>
-  </Drawer>
+  <Drawer.Backdrop
+    isOpen={isOpen}
+    onOpenChange={onOpenChange}
+    variant="opaque"
+    isDismissable={isDismissable}
+    isKeyboardDismissDisabled={!isDismissable}
+    className={sheetBackdropStyles}
+  >
+    <Drawer.Content placement="bottom">
+      <Drawer.Dialog className={sheetDialogStyles}>
+        <Drawer.Handle className={sheetHandleStyles} />
+        <Drawer.Header className={sheetHeaderStyles}>
+          <Drawer.Heading className={sheetHeadingStyles}>
+            {title}
+          </Drawer.Heading>
+          <IconButton
+            slot="close"
+            icon="close"
+            size="sm"
+            aria-label={closeLabel}
+            isDisabled={!isDismissable}
+          />
+        </Drawer.Header>
+        <Drawer.Body className={sheetBodyStyles}>{children}</Drawer.Body>
+        {footer && (
+          <Drawer.Footer className={sheetFooterStyles}>{footer}</Drawer.Footer>
+        )}
+      </Drawer.Dialog>
+    </Drawer.Content>
+  </Drawer.Backdrop>
 );
 
 Sheet.displayName = `Sheet`;

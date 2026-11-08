@@ -13,18 +13,13 @@ import {
   Badge,
   Button,
   ConfirmDialog,
+  DateTimePicker,
   notify,
   Sheet,
   Surface,
   TextField,
 } from '../../base';
-import {
-  DateTimeField,
-  fromDateTimeInput,
-  PanelState,
-  toDateTimeInput,
-  useSheetSession,
-} from '../admin-shared';
+import { PanelState, useSheetSession } from '../admin-shared';
 
 const BookingForm: FC<{ booking: IAdminBooking; onDone: () => void }> = ({
   booking,
@@ -34,19 +29,46 @@ const BookingForm: FC<{ booking: IAdminBooking; onDone: () => void }> = ({
   const now = useNow();
   const isInProgress = booking.startsAt <= now.getTime();
   const [title, setTitle] = useState(booking.title);
-  const [start, setStart] = useState(toDateTimeInput(booking.startsAt));
-  const [end, setEnd] = useState(toDateTimeInput(booking.endsAt));
+  const [start, setStart] = useState<number | null>(booking.startsAt);
+  const [endsAt, setEndsAt] = useState<number | null>(booking.endsAt);
+  // A picker showing an unfinished date (a segment cleared) still holds its
+  // last complete value, so it must block saving on its own.
+  const [isStartIncomplete, setStartIncomplete] = useState(false);
+  const [isEndIncomplete, setEndIncomplete] = useState(false);
   const [isSubmitted, setSubmitted] = useState(false);
   const reschedule = useRescheduleBooking();
 
-  const startsAt = isInProgress ? booking.startsAt : fromDateTimeInput(start);
-  const endsAt = fromDateTimeInput(end);
-  const isTimeInvalid =
-    startsAt === null || endsAt === null || endsAt <= startsAt;
+  // A meeting already under way keeps its start.
+  const startsAt = isInProgress ? booking.startsAt : start;
+  const isStartMissing =
+    startsAt === null || (!isInProgress && isStartIncomplete);
+  const isEndMissing = endsAt === null || isEndIncomplete;
+  const isOrderInvalid =
+    !isStartMissing &&
+    !isEndMissing &&
+    startsAt !== null &&
+    endsAt !== null &&
+    endsAt <= startsAt;
+  const isTimeInvalid = isStartMissing || isEndMissing || isOrderInvalid;
+
+  /** Moving the start moves the end with it, keeping the meeting's length. */
+  const handleStartChange = (next: number | null) => {
+    if (next !== null && start !== null && endsAt !== null) {
+      setEndsAt(endsAt + (next - start));
+    }
+    setStart(next);
+  };
 
   const handleSubmit = async () => {
     setSubmitted(true);
-    if (!title.trim() || isTimeInvalid) return;
+    if (
+      !title.trim() ||
+      isTimeInvalid ||
+      startsAt === null ||
+      endsAt === null
+    ) {
+      return;
+    }
     try {
       await reschedule.mutateAsync({
         id: booking.id,
@@ -75,21 +97,31 @@ const BookingForm: FC<{ booking: IAdminBooking; onDone: () => void }> = ({
         errorMessage={uiText.admin.required}
       />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <DateTimeField
+        <DateTimePicker
           label={t.start}
-          value={start}
-          onChange={setStart}
+          value={startsAt}
+          onChange={handleStartChange}
+          onIncompleteChange={setStartIncomplete}
           isDisabled={isInProgress}
-          isInvalid={isSubmitted && isTimeInvalid}
+          isRequired
+          isInvalid={isSubmitted && (isStartMissing || isOrderInvalid)}
+          errorMessage={
+            isStartMissing ? uiText.dateTimePicker.incomplete : undefined
+          }
         />
-        <DateTimeField
+        <DateTimePicker
           label={t.end}
-          value={end}
-          onChange={setEnd}
-          isInvalid={isSubmitted && isTimeInvalid}
+          value={endsAt}
+          onChange={setEndsAt}
+          onIncompleteChange={setEndIncomplete}
+          isRequired
+          isInvalid={isSubmitted && (isEndMissing || isOrderInvalid)}
+          errorMessage={
+            isEndMissing ? uiText.dateTimePicker.incomplete : undefined
+          }
         />
       </div>
-      {isSubmitted && isTimeInvalid && (
+      {isSubmitted && isOrderInvalid && (
         <p role="alert" className="typo-b2 text-danger-600">
           {t.invalidTime}
         </p>

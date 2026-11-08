@@ -10,6 +10,8 @@ import {
   IAdminRoom,
   IAdminService,
   IAdminStaff,
+  IAnnouncementPayload,
+  IAnnouncementSent,
   ICoinAdjustmentResult,
   ICreateStaffPayload,
   IEventPayload,
@@ -183,5 +185,18 @@ export class AdminService extends AbstractAPI implements IAdminService {
 
   async deleteEvent(id: string) {
     await this.delete<TEnvelope<null>>(`events/${id}`);
+  }
+
+  // Announcements
+  async sendAnnouncement(payload: IAnnouncementPayload) {
+    return unwrap(
+      await this.post<TEnvelope<IAnnouncementSent>>(`announcements`, payload),
+    );
+  }
+
+  async deleteAnnouncement(id: string) {
+    await this.delete<TEnvelope<null>>(
+      `announcements/${encodeURIComponent(id)}`,
+    );
   }
 }

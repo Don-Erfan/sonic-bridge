@@ -1,8 +1,14 @@
+import { env } from '@/config';
+
 /** Message the page sends to a waiting worker to activate it. */
 export const SKIP_WAITING_MESSAGE = { type: `SKIP_WAITING` } as const;
 
-/** Path of the worker script (served uncached, see `next.config.ts`). */
-export const SERVICE_WORKER_URL = `/sw.js`;
+/**
+ * The worker script (served uncached, see `next.config.ts`). Development
+ * builds load it in dev mode: push only, no caching, so code changes always
+ * show (see `public/sw.js`).
+ */
+export const SERVICE_WORKER_URL = env.isProduction ? `/sw.js` : `/sw.js?dev=1`;
 
 /**
  * Called when a new version of the app is installed and waiting. Invoke
@@ -49,6 +55,8 @@ export const registerServiceWorker = (
   void navigator.serviceWorker
     .register(SERVICE_WORKER_URL, { scope: `/` })
     .then((registration) => {
+      // The dev worker activates itself at once: no update prompt.
+      if (!env.isProduction) return;
       // An update finished installing during a previous visit.
       if (registration.waiting && navigator.serviceWorker.controller) {
         requestUpdate(registration.waiting);

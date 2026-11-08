@@ -1,5 +1,6 @@
 'use client';
 import React, { FC, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { uiText } from '@/config';
 import { useOrders, useTransactions, useWalletSummary } from '@/hooks';
 import {
@@ -37,9 +38,19 @@ const ListSkeleton = () => (
   </ul>
 );
 
-/** Coin wallet (`/wallet`): balance, ledger and store orders. */
+/**
+ * Coin wallet (`/wallet`): balance, ledger and store orders.
+ * `?tab=orders&order=<id>` (an order notification's link) opens the orders
+ * tab with that order's receipt.
+ */
 export const WalletView: FC = () => {
-  const [tab, setTab] = useState<TWalletTab>(`history`);
+  const searchParams = useSearchParams();
+  const linkedOrderId = searchParams.get(`order`);
+  const [tab, setTab] = useState<TWalletTab>(() =>
+    searchParams.get(`tab`) === `orders` || linkedOrderId
+      ? `orders`
+      : `history`,
+  );
   const { data: summary } = useWalletSummary();
   const transactions = useTransactions();
   const orders = useOrders();
@@ -63,7 +74,7 @@ export const WalletView: FC = () => {
       );
     }
     return orders.data && orders.data.length > 0 ? (
-      <OrderList orders={orders.data} />
+      <OrderList orders={orders.data} initialOpenId={linkedOrderId} />
     ) : (
       <EmptyState icon="bag" title={uiText.wallet.noOrders} />
     );

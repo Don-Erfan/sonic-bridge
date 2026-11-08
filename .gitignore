@@ -40,3 +40,6 @@ next-env.d.ts
 .idea
 .yarn
 .claude
+
+# local HTTPS dev certificates and keys (scripts/dev-https.sh)
+/certificates

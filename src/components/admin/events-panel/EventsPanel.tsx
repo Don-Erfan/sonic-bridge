@@ -10,11 +10,13 @@ import {
 } from '@/hooks';
 import { eventCategoryRegistry, TEventCategory } from '@/lib/events';
 import { addMinutes, formatDateTime, formatNumber } from '@/lib/utils';
+import { Icon } from '@/icons';
 import type { ICompanyEvent } from '@/services';
 import {
   Badge,
   Button,
   ConfirmDialog,
+  DateTimePicker,
   ISegmentedOption,
   notify,
   SegmentedControl,
@@ -22,14 +24,7 @@ import {
   Surface,
   TextField,
 } from '../../base';
-import {
-  DateTimeField,
-  fromDateTimeInput,
-  PanelState,
-  toDateTimeInput,
-  ToggleRow,
-  useSheetSession,
-} from '../admin-shared';
+import { PanelState, ToggleRow, useSheetSession } from '../admin-shared';
 
 const CATEGORIES = Object.keys(eventCategoryRegistry) as TEventCategory[];
 
@@ -60,12 +55,16 @@ const EventForm: FC<{ event: ICompanyEvent | null; onDone: () => void }> = ({
   const [category, setCategory] = useState<TEventCategory>(
     event?.category ?? `meeting`,
   );
-  const [start, setStart] = useState(
-    toDateTimeInput(event?.startsAt ?? defaultStart),
+  const [startsAt, setStartsAt] = useState<number | null>(
+    event?.startsAt ?? defaultStart,
   );
-  const [end, setEnd] = useState(
-    toDateTimeInput(event?.endsAt ?? defaultStart + 60 * 60_000),
+  const [endsAt, setEndsAt] = useState<number | null>(
+    event?.endsAt ?? defaultStart + 60 * 60_000,
   );
+  // A picker showing an unfinished date (a segment cleared) still holds its
+  // last complete value, so it must block saving on its own.
+  const [isStartIncomplete, setStartIncomplete] = useState(false);
+  const [isEndIncomplete, setEndIncomplete] = useState(false);
   const [isAllDay, setAllDay] = useState(event?.isAllDay ?? false);
   const [location, setLocation] = useState(event?.location ?? ``);
   const [organizer, setOrganizer] = useState(event?.organizer ?? ``);
@@ -73,8 +72,13 @@ const EventForm: FC<{ event: ICompanyEvent | null; onDone: () => void }> = ({
   const createEvent = useCreateEvent();
   const updateEvent = useUpdateEvent();
 
-  const startsAt = fromDateTimeInput(start);
-  const endsAt = fromDateTimeInput(end);
+  /** Moving the start moves the end with it, keeping the event's length. */
+  const handleStartChange = (next: number | null) => {
+    if (next !== null && startsAt !== null && endsAt !== null) {
+      setEndsAt(endsAt + (next - startsAt));
+    }
+    setStartsAt(next);
+  };
 
   const handleSubmit = async () => {
     setSubmitted(true);
@@ -82,6 +86,8 @@ const EventForm: FC<{ event: ICompanyEvent | null; onDone: () => void }> = ({
       !title.trim() ||
       startsAt === null ||
       endsAt === null ||
+      isStartIncomplete ||
+      isEndIncomplete ||
       endsAt <= startsAt
     ) {
       return;
@@ -110,8 +116,16 @@ const EventForm: FC<{ event: ICompanyEvent | null; onDone: () => void }> = ({
     }
   };
 
-  const isTimeInvalid =
-    isSubmitted && (startsAt === null || endsAt === null || endsAt <= startsAt);
+  const isStartMissing =
+    isSubmitted && (startsAt === null || isStartIncomplete);
+  const isEndMissing = isSubmitted && (endsAt === null || isEndIncomplete);
+  const isOrderInvalid =
+    isSubmitted &&
+    !isStartMissing &&
+    !isEndMissing &&
+    startsAt !== null &&
+    endsAt !== null &&
+    endsAt <= startsAt;
 
   return (
     <div className="flex flex-col gap-4">
@@ -144,20 +158,30 @@ const EventForm: FC<{ event: ICompanyEvent | null; onDone: () => void }> = ({
         </div>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <DateTimeField
+        <DateTimePicker
           label={t.startsAt}
-          value={start}
-          onChange={setStart}
-          isInvalid={isTimeInvalid}
+          value={startsAt}
+          onChange={handleStartChange}
+          onIncompleteChange={setStartIncomplete}
+          isRequired
+          isInvalid={isStartMissing || isOrderInvalid}
+          errorMessage={
+            isStartMissing ? uiText.dateTimePicker.incomplete : undefined
+          }
         />
-        <DateTimeField
+        <DateTimePicker
           label={t.endsAt}
-          value={end}
-          onChange={setEnd}
-          isInvalid={isTimeInvalid}
+          value={endsAt}
+          onChange={setEndsAt}
+          onIncompleteChange={setEndIncomplete}
+          isRequired
+          isInvalid={isEndMissing || isOrderInvalid}
+          errorMessage={
+            isEndMissing ? uiText.dateTimePicker.incomplete : undefined
+          }
         />
       </div>
-      {isTimeInvalid && (
+      {isOrderInvalid && (
         <p role="alert" className="typo-b2 text-danger-600">
           {t.invalidTime}
         </p>
@@ -218,7 +242,11 @@ export const EventsPanel: FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="flex min-w-0 flex-1 items-start gap-2 typo-b2 text-fg-tertiary">
+          <Icon name="bell" size={16} className="mt-0.5 shrink-0" />
+          {t.notifyHint}
+        </p>
         <Button
           variant="primary"
           startIcon="plus"

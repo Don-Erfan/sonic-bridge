@@ -14,8 +14,17 @@
  * shows "new version ready"; when the user accepts, it posts SKIP_WAITING
  * and reloads on `controllerchange` (see src/lib/pwa/service-worker.ts).
  * Bump VERSION whenever this file's caching behaviour changes.
+ *
+ * Push: shows the notifications the server sends (order handed over /
+ * cancelled), also while the app is closed, and opens the linked page when
+ * one is tapped.
+ *
+ * Development (`/sw.js?dev=1`): only push is active. Nothing is precached
+ * or served from a cache, so code changes always show, and caches left by a
+ * production build on the same origin are deleted.
  */
-const VERSION = `v1`;
+const VERSION = `v2`;
+const IS_DEV = new URLSearchParams(self.location.search).get(`dev`) === `1`;
 const SHELL_CACHE = `ozone-shell-${VERSION}`;
 const PAGE_CACHE = `ozone-pages-${VERSION}`;
 const STATIC_CACHE = `ozone-static-${VERSION}`;
@@ -40,6 +49,11 @@ const PRECACHE_URLS = [
 const MAX_CACHED_PAGES = 30;
 
 self.addEventListener(`install`, (event) => {
+  if (IS_DEV) {
+    // No update prompt in development: the newest worker takes over.
+    self.skipWaiting();
+    return;
+  }
   event.waitUntil(
     caches.open(SHELL_CACHE).then((cache) => cache.addAll(PRECACHE_URLS)),
   );
@@ -51,7 +65,10 @@ self.addEventListener(`activate`, (event) => {
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((key) => key.startsWith(`ozone-`) && !CURRENT_CACHES.has(key))
+          .filter(
+            (key) =>
+              key.startsWith(`ozone-`) && (IS_DEV || !CURRENT_CACHES.has(key)),
+          )
           .map((key) => caches.delete(key)),
       );
       await self.clients.claim();
@@ -116,6 +133,7 @@ const staleWhileRevalidate = async (request, cacheName) => {
 };
 
 self.addEventListener(`fetch`, (event) => {
+  if (IS_DEV) return;
   const { request } = event;
   if (request.method !== `GET`) return;
 
@@ -141,4 +159,114 @@ self.addEventListener(`fetch`, (event) => {
   ) {
     event.respondWith(staleWhileRevalidate(request, ASSET_CACHE));
   }
+});
+
+/* ---------------------------------------------------------------- Push --- */
+
+/** Sent to open pages when a notification arrives (see src/lib/pwa/push.ts). */
+const PUSH_RECEIVED_MESSAGE = `PUSH_RECEIVED`;
+const DEFAULT_TITLE = `اوزون`;
+
+/** The server's payload `{ title, body, url, tag }`; tolerant of bad data. */
+const readPush = (event) => {
+  try {
+    const data = event.data ? event.data.json() : {};
+    return {
+      title:
+        typeof data.title === `string` && data.title
+          ? data.title
+          : DEFAULT_TITLE,
+      body: typeof data.body === `string` ? data.body : ``,
+      url: typeof data.url === `string` ? data.url : `/`,
+      tag: typeof data.tag === `string` && data.tag ? data.tag : undefined,
+    };
+  } catch {
+    return { title: DEFAULT_TITLE, body: ``, url: `/`, tag: undefined };
+  }
+};
+
+/** Only paths of this app are opened; anything else falls back to home. */
+const toAppUrl = (value) => {
+  try {
+    const url = new URL(value, self.location.origin);
+    return url.origin === self.location.origin
+      ? url.href
+      : self.location.origin + `/`;
+  } catch {
+    return self.location.origin + `/`;
+  }
+};
+
+self.addEventListener(`push`, (event) => {
+  const push = readPush(event);
+  event.waitUntil(
+    (async () => {
+      // Always show one: browsers require a visible notification per push.
+      await self.registration.showNotification(push.title, {
+        body: push.body,
+        icon: `/icons/icon-192.png`,
+        badge: `/icons/badge-96.png`,
+        lang: `fa`,
+        dir: `rtl`,
+        tag: push.tag,
+        // A newer update of the same order replaces the old one, audibly.
+        renotify: Boolean(push.tag),
+        data: { url: toAppUrl(push.url) },
+      });
+      const windows = await self.clients.matchAll({
+        type: `window`,
+        includeUncontrolled: true,
+      });
+      for (const client of windows) {
+        client.postMessage({ type: PUSH_RECEIVED_MESSAGE });
+      }
+    })(),
+  );
+});
+
+self.addEventListener(`notificationclick`, (event) => {
+  event.notification.close();
+  const url = toAppUrl(event.notification.data && event.notification.data.url);
+  event.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({
+        type: `window`,
+        includeUncontrolled: true,
+      });
+      const client =
+        windows.find((item) => item.focused) ||
+        windows.find(
+          (item) => new URL(item.url).origin === self.location.origin,
+        );
+      if (client) {
+        try {
+          const focused = await client.focus();
+          if (focused.url !== url && `navigate` in focused) {
+            await focused.navigate(url);
+          }
+          return;
+        } catch {
+          // Not controlled by this worker / cannot focus: open a new window.
+        }
+      }
+      await self.clients.openWindow(url);
+    })(),
+  );
+});
+
+/*
+ * The push service replaced or expired the subscription. The worker cannot
+ * call the API (it may live on another origin and needs the session), so
+ * it only makes sure the browser holds a subscription again; the app sends
+ * it to the server the next time it opens (see `usePushSync`).
+ */
+self.addEventListener(`pushsubscriptionchange`, (event) => {
+  const key =
+    event.oldSubscription && event.oldSubscription.options.applicationServerKey;
+  if (event.newSubscription || !key) return;
+  event.waitUntil(
+    self.registration.pushManager
+      .subscribe({ userVisibleOnly: true, applicationServerKey: key })
+      .catch(() => undefined),
+  );
 });

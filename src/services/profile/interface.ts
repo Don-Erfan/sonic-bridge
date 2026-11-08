@@ -23,7 +23,7 @@ export const STAFF_ROLES: readonly TStaffRole[] = [
 /**
  * An administration area: `staff` (people, details, photos), `access`
  * (passwords, activation), `roles`, `coins`, `store` (products), `orders`,
- * `rooms` (rooms and bookings), `events`.
+ * `rooms` (rooms and bookings), `events`, `announcements` (to all staff).
  */
 export type TAdminArea =
   | `staff`
@@ -33,7 +33,8 @@ export type TAdminArea =
   | `store`
   | `orders`
   | `rooms`
-  | `events`;
+  | `events`
+  | `announcements`;
 
 /** The signed-in staff member. */
 export interface IProfile {

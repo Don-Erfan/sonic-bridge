@@ -1,9 +1,11 @@
 import type { IAdminService } from '../admin/interface';
+import type { IAnnouncementService } from '../announcements/interface';
 import type { IAttendanceService } from '../attendance/interface';
 import type { IAuthService } from '../auth/interface';
 import type { IEventService } from '../events/interface';
 import type { IMoodService } from '../mood/interface';
 import type { IProfileService } from '../profile/interface';
+import type { IPushService } from '../push/interface';
 import type { IRoomService } from '../rooms/interface';
 import type { IStaffService } from '../staff/interface';
 import type { IStatusSyncTarget } from '../status-sync/interface';
@@ -26,6 +28,8 @@ export interface IServiceFactory {
   createEventService(): IEventService;
   createMoodService(): IMoodService;
   createAdminService(): IAdminService;
+  createPushService(): IPushService;
+  createAnnouncementService(): IAnnouncementService;
   /** Every external tool the mood is mirrored to, as one target. */
   createStatusSync(): IStatusSyncTarget;
 }

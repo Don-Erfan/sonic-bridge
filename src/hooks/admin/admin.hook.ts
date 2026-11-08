@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query';
 import {
   adminKeys,
+  announcementKeys,
   eventKeys,
   profileKeys,
   roomKeys,
@@ -16,6 +17,7 @@ import {
 import {
   adminService,
   IAdjustCoinsPayload,
+  IAnnouncementPayload,
   ICreateStaffPayload,
   IEventPayload,
   IReschedulePayload,
@@ -268,4 +270,20 @@ export const useDeleteEvent = () =>
   useAdminMutation(
     (id: string) => adminService.deleteEvent(id),
     EVENTS_AFFECTED,
+  );
+
+const ANNOUNCEMENTS_AFFECTED = [announcementKeys.all];
+
+/** Saves an announcement and pushes it to everyone (the sender's devices too). */
+export const useSendAnnouncement = () =>
+  useAdminMutation(
+    (payload: IAnnouncementPayload) => adminService.sendAnnouncement(payload),
+    ANNOUNCEMENTS_AFFECTED,
+  );
+
+/** Removes an announcement from the list (shown notifications stay). */
+export const useDeleteAnnouncement = () =>
+  useAdminMutation(
+    (id: string) => adminService.deleteAnnouncement(id),
+    ANNOUNCEMENTS_AFFECTED,
   );

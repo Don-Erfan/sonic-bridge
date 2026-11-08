@@ -12,6 +12,7 @@ import {
   Skeleton,
 } from '../../base';
 import { PageHeader } from '../../layout';
+import { AnnouncementsPanel } from '../announcements-panel';
 import { BookingsPanel } from '../bookings-panel';
 import { EventsPanel } from '../events-panel';
 import { OrdersPanel } from '../orders-panel';
@@ -20,7 +21,13 @@ import { RoomsPanel } from '../rooms-panel';
 import { StaffPanel } from '../staff-panel';
 
 type TAdminSection =
-  `staff` | `products` | `orders` | `rooms` | `bookings` | `events`;
+  | `staff`
+  | `products`
+  | `orders`
+  | `rooms`
+  | `bookings`
+  | `events`
+  | `announcements`;
 
 const SECTIONS: readonly ISegmentedOption<TAdminSection>[] = [
   { value: `staff`, label: uiText.admin.sections.staff, icon: `users` },
@@ -29,6 +36,11 @@ const SECTIONS: readonly ISegmentedOption<TAdminSection>[] = [
   { value: `rooms`, label: uiText.admin.sections.rooms, icon: `door` },
   { value: `bookings`, label: uiText.admin.sections.bookings, icon: `clock` },
   { value: `events`, label: uiText.admin.sections.events, icon: `calendar` },
+  {
+    value: `announcements`,
+    label: uiText.admin.sections.announcements,
+    icon: `megaphone`,
+  },
 ];
 
 /** The permission each section needs (bookings belong to rooms). */
@@ -39,6 +51,7 @@ const SECTION_AREA: Record<TAdminSection, TAdminArea> = {
   rooms: `rooms`,
   bookings: `rooms`,
   events: `events`,
+  announcements: `announcements`,
 };
 
 const PANELS: Record<TAdminSection, FC> = {
@@ -48,6 +61,7 @@ const PANELS: Record<TAdminSection, FC> = {
   rooms: RoomsPanel,
   bookings: BookingsPanel,
   events: EventsPanel,
+  announcements: AnnouncementsPanel,
 };
 
 /**

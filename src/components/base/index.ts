@@ -8,6 +8,7 @@ export * from './badge';
 export * from './button';
 export * from './coin-amount';
 export * from './confirm-dialog';
+export * from './date-time-picker';
 export * from './empty-state';
 export * from './error-state';
 export * from './icon-button';

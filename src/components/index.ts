@@ -14,6 +14,7 @@
  */
 export * from '../icons';
 export * from './admin';
+export * from './announcements';
 export * from './attendance';
 export * from './auth';
 export * from './base';

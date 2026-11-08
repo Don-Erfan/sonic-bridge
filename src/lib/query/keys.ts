@@ -26,6 +26,8 @@ const roomRoot = branch(`rooms`);
 const eventRoot = branch(`events`);
 const moodRoot = branch(`mood`);
 const adminRoot = branch(`admin`);
+const pushRoot = branch(`push`);
+const announcementRoot = branch(`announcements`);
 
 /** The signed-in user. */
 export const profileKeys = {
@@ -88,4 +90,16 @@ export const adminKeys = {
   rooms: () => [...adminRoot, `rooms`] as const,
   bookings: () => [...adminRoot, `bookings`] as const,
   events: () => [...adminRoot, `events`] as const,
+} as const satisfies IFeatureQueryKeys;
+
+/** Web Push: the server's configuration (its VAPID public key). */
+export const pushKeys = {
+  all: pushRoot,
+  config: () => [...pushRoot, `config`] as const,
+} as const satisfies IFeatureQueryKeys;
+
+/** Announcements to all staff. */
+export const announcementKeys = {
+  all: announcementRoot,
+  list: () => [...announcementRoot, `list`] as const,
 } as const satisfies IFeatureQueryKeys;

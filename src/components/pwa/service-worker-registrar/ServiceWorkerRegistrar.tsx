@@ -1,6 +1,6 @@
 'use client';
 import { FC, useEffect } from 'react';
-import { env, uiText } from '@/config';
+import { uiText } from '@/config';
 import { installPromptStore, registerServiceWorker } from '@/lib/pwa';
 import { notify } from '../../base';
 import { IServiceWorkerRegistrarProps } from './interface';
@@ -10,15 +10,17 @@ import { IServiceWorkerRegistrarProps } from './interface';
 installPromptStore.getSnapshot();
 
 /**
- * Registers the service worker (offline shell, cached assets) and offers a
- * reload when a new version is waiting — never a surprise reload mid-task.
- * In development it removes any worker left by a production build on the
- * same origin, so stale caches never mask code changes.
+ * Registers the service worker (offline shell, cached assets, push
+ * notifications) and offers a reload when a new version is waiting — never
+ * a surprise reload mid-task. Development registers the worker in dev mode
+ * (push only, no caching), which replaces any worker left by a production
+ * build on the same origin, so stale caches never mask code changes.
+ * With `isEnabled={false}` every worker is removed.
  *
  * Renders nothing; mounted once by `Providers`.
  */
 export const ServiceWorkerRegistrar: FC<IServiceWorkerRegistrarProps> = ({
-  isEnabled = env.isProduction,
+  isEnabled = true,
 }) => {
   useEffect(() => {
     if (!(`serviceWorker` in navigator)) return;

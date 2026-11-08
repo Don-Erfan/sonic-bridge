@@ -12,6 +12,10 @@ const CALENDAR = [
   `M8 3v4`,
   `M16 3v4`,
 ];
+const BELL = [
+  `M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9Z`,
+  `M10 20a2 2 0 0 0 4 0`,
+];
 const CIRCLE = `M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z`;
 const EYE = `M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z`;
 const EYE_PUPIL = `M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z`;
@@ -34,6 +38,8 @@ export const iconRegistry: Record<TIconName, IIconDefinition> = {
     `M5.5 8h13l-1 12a1 1 0 0 1-1 .9h-9a1 1 0 0 1-1-.9Z`,
     `M9 10V7a3 3 0 0 1 6 0v3`,
   ),
+  bell: stroke(...BELL),
+  'bell-off': stroke(...BELL, `M3 3l18 18`),
   book: stroke(
     `M5 5.5A2.5 2.5 0 0 1 7.5 3H19v14H7.5A2.5 2.5 0 0 0 5 19.5Z`,
     `M5 19.5A2.5 2.5 0 0 0 7.5 22H19v-5`,

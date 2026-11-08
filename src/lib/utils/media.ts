@@ -26,16 +26,19 @@ export const checkImageFile = (file: File): TImageProblem => {
 };
 
 /**
- * Absolute URL of an image the API stored (`/api/v1/media/…`). The API
- * returns paths relative to its own origin, which differs from the app's,
- * so they are resolved against `NEXT_PUBLIC_BASE_API`. Absolute URLs pass
- * through; `null`/empty stay `null`.
+ * URL of an image the API stored (`/api/v1/media/…`). The API returns paths
+ * relative to its own origin: with an absolute `NEXT_PUBLIC_BASE_API` (API on
+ * another origin) they are resolved against it; with a relative one (the API
+ * forwarded through this app, see `API_ORIGIN` in `next.config.ts`) the path
+ * already points at this origin and is kept. Absolute URLs pass through;
+ * `null`/empty stay `null`.
  */
 export const resolveMediaUrl = (
   url: string | null | undefined,
 ): string | null => {
   if (!url) return null;
   if (!url.startsWith(`/`) || url.startsWith(`//`)) return url;
+  if (!/^https?:\/\//i.test(env.baseApi)) return url;
   try {
     return new URL(url, env.baseApi).toString();
   } catch {

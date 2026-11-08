@@ -22,10 +22,12 @@ const STATUS_TONE: Record<TOrderStatus, `warning` | `success` | `neutral`> = {
  * @example
  * <OrderList orders={orders} />
  */
-export const OrderList: FC<IOrderListProps> = ({ orders }) => {
+export const OrderList: FC<IOrderListProps> = ({ orders, initialOpenId }) => {
   const now = useNow();
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [isOpen, setOpen] = useState(false);
+  const [openId, setOpenId] = useState<string | null>(initialOpenId ?? null);
+  const [isOpen, setOpen] = useState(
+    () => !!initialOpenId && orders.some((order) => order.id === initialOpenId),
+  );
   // Looked up in the live list, so a status change (handed over) shows.
   const opened = orders.find((order) => order.id === openId) ?? null;
 

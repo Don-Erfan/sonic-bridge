@@ -22,6 +22,17 @@ const lanAddresses = Object.values(networkInterfaces())
  * - **headers()** serves the service worker uncached (so an update is picked
  *   up on the next visit) and adds baseline security headers to every route.
  */
+/**
+ * Where `/api/v1/*` is forwarded to (server-only, e.g. `http://localhost:5080`).
+ * With it, the browser calls the API on the app's own origin
+ * (`NEXT_PUBLIC_BASE_API=/api/v1`), so a phone that opened
+ * `http://192.168.1.20:3000` reaches the API through this server — `localhost`
+ * on a phone is the phone itself, and the API only listens on this machine.
+ * Unset (e.g. an absolute `NEXT_PUBLIC_BASE_API` in production), nothing is
+ * forwarded.
+ */
+const apiOrigin = process.env.API_ORIGIN?.replace(/\/+$/, ``);
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactCompiler: true,
@@ -32,6 +43,21 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: [`@heroui/react`, `react-aria-components`],
+    // Dev only. The debug channel streams React's debug info over the HMR
+    // WebSocket into a WritableStream; on iOS Safari late chunks arrive after
+    // the stream closed, flooding the terminal with "stream is closing or
+    // closed". Off, the same debug info rides in the RSC payload instead.
+    reactDebugChannel: false,
+  },
+  async rewrites() {
+    return apiOrigin
+      ? [
+          {
+            source: `/api/v1/:path*`,
+            destination: `${apiOrigin}/api/v1/:path*`,
+          },
+        ]
+      : [];
   },
   async headers() {
     return [

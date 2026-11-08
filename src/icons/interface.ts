@@ -2,6 +2,8 @@
 export type TIconName =
   | `alert`
   | `bag`
+  | `bell`
+  | `bell-off`
   | `book`
   | `building`
   | `calendar`

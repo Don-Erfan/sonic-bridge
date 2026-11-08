@@ -17,6 +17,10 @@ import {
  * Confirmation dialog — HeroUI `AlertDialog` (`alertdialog` role, focus on
  * the actions, not dismissed by a stray tap while pending).
  *
+ * Opened from state, so the open state goes on the backdrop and the
+ * `AlertDialog` root (a trigger-less `DialogTrigger`, which warns about a
+ * missing pressable child) is left out — like `Sheet`.
+ *
  * @example
  * <ConfirmDialog
  *   title="لغو رزرو"
@@ -39,48 +43,48 @@ export const ConfirmDialog: FC<IConfirmDialogProps> = ({
   const { isPending, run } = useAsyncAction(onConfirm);
 
   return (
-    <AlertDialog isOpen={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialog.Backdrop
-        variant="opaque"
-        isDismissable={!isPending}
-        className={confirmDialogBackdropStyles}
-      >
-        <AlertDialog.Container placement="center">
-          <AlertDialog.Dialog className={confirmDialogStyles}>
-            {({ close }) => (
-              <>
-                <AlertDialog.Header className="p-0">
-                  <AlertDialog.Heading className={confirmDialogHeadingStyles}>
-                    {title}
-                  </AlertDialog.Heading>
-                </AlertDialog.Header>
-                <AlertDialog.Body className={confirmDialogBodyStyles}>
-                  {message}
-                </AlertDialog.Body>
-                <AlertDialog.Footer className={confirmDialogFooterStyles}>
-                  <Button
-                    variant="secondary"
-                    isDisabled={isPending}
-                    onPress={close}
-                  >
-                    {cancelLabel}
-                  </Button>
-                  <Button
-                    variant={tone}
-                    isLoading={isPending}
-                    onPress={async () => {
-                      if (await run()) close();
-                    }}
-                  >
-                    {confirmLabel}
-                  </Button>
-                </AlertDialog.Footer>
-              </>
-            )}
-          </AlertDialog.Dialog>
-        </AlertDialog.Container>
-      </AlertDialog.Backdrop>
-    </AlertDialog>
+    <AlertDialog.Backdrop
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      variant="opaque"
+      isDismissable={!isPending}
+      className={confirmDialogBackdropStyles}
+    >
+      <AlertDialog.Container placement="center">
+        <AlertDialog.Dialog className={confirmDialogStyles}>
+          {({ close }) => (
+            <>
+              <AlertDialog.Header className="p-0">
+                <AlertDialog.Heading className={confirmDialogHeadingStyles}>
+                  {title}
+                </AlertDialog.Heading>
+              </AlertDialog.Header>
+              <AlertDialog.Body className={confirmDialogBodyStyles}>
+                {message}
+              </AlertDialog.Body>
+              <AlertDialog.Footer className={confirmDialogFooterStyles}>
+                <Button
+                  variant="secondary"
+                  isDisabled={isPending}
+                  onPress={close}
+                >
+                  {cancelLabel}
+                </Button>
+                <Button
+                  variant={tone}
+                  isLoading={isPending}
+                  onPress={async () => {
+                    if (await run()) close();
+                  }}
+                >
+                  {confirmLabel}
+                </Button>
+              </AlertDialog.Footer>
+            </>
+          )}
+        </AlertDialog.Dialog>
+      </AlertDialog.Container>
+    </AlertDialog.Backdrop>
   );
 };
 

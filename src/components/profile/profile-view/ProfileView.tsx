@@ -24,13 +24,13 @@ import {
 } from '../../base';
 import { PageHeader } from '../../layout';
 import { MoodCard } from '../../mood';
-import { InstallAppCard } from '../../pwa';
+import { InstallAppCard, NotificationsCard } from '../../pwa';
 import { ThemeSwitch } from '../../theme-switch';
 
 /**
  * Profile & settings (`/profile`): identity and photo, mood, theme,
- * Mattermost link, the admin panel (administrators only), app install and
- * sign-out.
+ * Mattermost link, the admin panel (administrators only), notifications,
+ * app install and sign-out.
  */
 export const ProfileView: FC = () => {
   const router = useRouter();
@@ -206,6 +206,8 @@ export const ProfileView: FC = () => {
           />
         </Link>
       )}
+
+      <NotificationsCard />
 
       <InstallAppCard />
 

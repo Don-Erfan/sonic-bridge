@@ -23,24 +23,3 @@ export const parseOptionalInteger = (
 /** Empty or whitespace-only text becomes `null`. */
 export const toOptionalText = (text: string): string | null =>
   text.trim() ? text.trim() : null;
-
-const pad = (value: number) => String(value).padStart(2, `0`);
-
-/**
- * `<input type="datetime-local">` value (`YYYY-MM-DDTHH:mm`, local time) of
- * an instant. The browser's local time is the office time, as everywhere in
- * the app.
- */
-export const toDateTimeInput = (ms: number): string => {
-  const date = new Date(ms);
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
-
-/** The instant a `datetime-local` value names, or `null` when incomplete. */
-export const fromDateTimeInput = (value: string): number | null => {
-  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
-  if (!match) return null;
-  const [, year, month, day, hours, minutes] = match.map(Number);
-  const date = new Date(year, month - 1, day, hours, minutes);
-  return Number.isNaN(date.getTime()) ? null : date.getTime();
-};

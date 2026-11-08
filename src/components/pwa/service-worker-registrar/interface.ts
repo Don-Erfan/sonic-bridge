@@ -1,4 +1,7 @@
 export interface IServiceWorkerRegistrarProps {
-  /** Register only in production builds (default): dev caching breaks HMR. */
+  /**
+   * `false` unregisters every service worker instead. Default `true`;
+   * development builds register it in dev mode (push only, no caching).
+   */
   isEnabled?: boolean;
 }
