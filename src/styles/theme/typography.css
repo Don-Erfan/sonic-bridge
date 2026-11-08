@@ -1,0 +1,117 @@
+/*
+ * Typography — mobile-first scale tuned for Persian (Vazirmatn): Arabic-script
+ * glyphs need taller line heights than Latin, so body text uses ~1.6.
+ *
+ *   Utility       Weight     Mobile (base)   Desktop (lg: ≥1024px)
+ *   typo-display  Bold       30 / 40         36 / 48
+ *   typo-h1       Bold       24 / 34         28 / 40
+ *   typo-h2       Bold       20 / 30         22 / 32
+ *   typo-h3       SemiBold   17 / 26         18 / 28
+ *   typo-s1       Medium     14 / 22         15 / 24
+ *   typo-s2       Medium     12 / 20         13 / 20
+ *   typo-b1       Regular    14 / 24         15 / 26
+ *   typo-b2       Regular    12 / 20         13 / 22
+ *   typo-c1       Regular    11 / 16         11 / 16
+ *
+ * Named `typo-*` (not `text-*`) so HeroUI's tailwind-merge never mistakes a
+ * size for a colour. Each honours `leading-*` / `font-*` overrides.
+ */
+@theme inline {
+  --font-sans:
+    var(--font-vazirmatn), ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  :root {
+    --typo-display-size: 1.875rem;
+    --typo-display-line-height: 2.5rem;
+    --typo-h1-size: 1.5rem;
+    --typo-h1-line-height: 2.125rem;
+    --typo-h2-size: 1.25rem;
+    --typo-h2-line-height: 1.875rem;
+    --typo-h3-size: 1.0625rem;
+    --typo-h3-line-height: 1.625rem;
+    --typo-s1-size: 0.875rem;
+    --typo-s1-line-height: 1.375rem;
+    --typo-s2-size: 0.75rem;
+    --typo-s2-line-height: 1.25rem;
+    --typo-b1-size: 0.875rem;
+    --typo-b1-line-height: 1.5rem;
+    --typo-b2-size: 0.75rem;
+    --typo-b2-line-height: 1.25rem;
+    --typo-c1-size: 0.6875rem;
+    --typo-c1-line-height: 1rem;
+
+    @variant lg {
+      --typo-display-size: 2.25rem;
+      --typo-display-line-height: 3rem;
+      --typo-h1-size: 1.75rem;
+      --typo-h1-line-height: 2.5rem;
+      --typo-h2-size: 1.375rem;
+      --typo-h2-line-height: 2rem;
+      --typo-h3-size: 1.125rem;
+      --typo-h3-line-height: 1.75rem;
+      --typo-s1-size: 0.9375rem;
+      --typo-s1-line-height: 1.5rem;
+      --typo-s2-size: 0.8125rem;
+      --typo-b1-size: 0.9375rem;
+      --typo-b1-line-height: 1.625rem;
+      --typo-b2-size: 0.8125rem;
+      --typo-b2-line-height: 1.375rem;
+    }
+  }
+}
+
+@utility typo-display {
+  font-size: var(--typo-display-size);
+  line-height: var(--tw-leading, var(--typo-display-line-height));
+  font-weight: var(--tw-font-weight, 700);
+}
+
+@utility typo-h1 {
+  font-size: var(--typo-h1-size);
+  line-height: var(--tw-leading, var(--typo-h1-line-height));
+  font-weight: var(--tw-font-weight, 700);
+}
+
+@utility typo-h2 {
+  font-size: var(--typo-h2-size);
+  line-height: var(--tw-leading, var(--typo-h2-line-height));
+  font-weight: var(--tw-font-weight, 700);
+}
+
+@utility typo-h3 {
+  font-size: var(--typo-h3-size);
+  line-height: var(--tw-leading, var(--typo-h3-line-height));
+  font-weight: var(--tw-font-weight, 600);
+}
+
+@utility typo-s1 {
+  font-size: var(--typo-s1-size);
+  line-height: var(--tw-leading, var(--typo-s1-line-height));
+  font-weight: var(--tw-font-weight, 500);
+}
+
+@utility typo-s2 {
+  font-size: var(--typo-s2-size);
+  line-height: var(--tw-leading, var(--typo-s2-line-height));
+  font-weight: var(--tw-font-weight, 500);
+}
+
+@utility typo-b1 {
+  font-size: var(--typo-b1-size);
+  line-height: var(--tw-leading, var(--typo-b1-line-height));
+  font-weight: var(--tw-font-weight, 400);
+}
+
+@utility typo-b2 {
+  font-size: var(--typo-b2-size);
+  line-height: var(--tw-leading, var(--typo-b2-line-height));
+  font-weight: var(--tw-font-weight, 400);
+}
+
+@utility typo-c1 {
+  font-size: var(--typo-c1-size);
+  line-height: var(--tw-leading, var(--typo-c1-line-height));
+  font-weight: var(--tw-font-weight, 400);
+}

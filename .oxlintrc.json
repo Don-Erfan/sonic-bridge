@@ -1,0 +1,66 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "react",
+    "nextjs",
+    "jsx-a11y",
+    "import"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2024": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/jsx-key": "error",
+    "react/no-danger": "off",
+    "import/no-cycle": "error",
+    "import/no-self-import": "error",
+    "typescript/no-explicit-any": "warn",
+    "typescript/consistent-type-definitions": ["error", "interface"],
+    "no-console": [
+      "warn",
+      {
+        "allow": ["warn", "error"]
+      }
+    ],
+    "eqeqeq": ["error", "always"],
+    "prefer-const": "error",
+    "import/no-unassigned-import": [
+      "warn",
+      {
+        "allow": ["**/*.css"]
+      }
+    ],
+    "import/no-named-as-default": "off"
+  },
+  "ignorePatterns": [".next", "node_modules", "next-env.d.ts"],
+  "overrides": [
+    {
+      "files": ["src/services/interceptor/**"],
+      "rules": {
+        "typescript/no-explicit-any": "off",
+        "no-underscore-dangle": "off",
+        "import/no-named-as-default-member": "off",
+        "unicorn/no-array-reverse": "off"
+      }
+    },
+    {
+      "files": ["src/services/**/*.mock.ts", "src/services/mock/**"],
+      "rules": {
+        "oxc/no-map-spread": "off"
+      }
+    }
+  ]
+}

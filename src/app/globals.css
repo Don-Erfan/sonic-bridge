@@ -1,0 +1,45 @@
+/*
+ * Global stylesheet — the single CSS entry point (imported by the root layout).
+ *
+ * Tailwind CSS v4 is configured in CSS: there is no `tailwind.config.*`. The
+ * design tokens live in `src/styles/theme/*` and are registered with `@theme`,
+ * so each value becomes a first-class utility.
+ *
+ * Order matters:
+ *   1. Layer order, so HeroUI and the theme files land in the right cascade.
+ *   2. HeroUI styles (they import Tailwind CSS itself).
+ *   3. Ozone tokens. Their `theme`-layer declarations sit outside HeroUI's
+ *      nested sub-layer, so they win over HeroUI's defaults.
+ */
+@layer theme, base, components, utilities;
+
+@import '@heroui/styles';
+
+@import '../styles/theme/colors.css';
+@import '../styles/theme/neumorphism.css';
+@import '../styles/theme/components.css';
+@import '../styles/theme/heroui.css';
+@import '../styles/theme/radius.css';
+@import '../styles/theme/breakpoints.css';
+@import '../styles/theme/typography.css';
+
+@layer base {
+  html {
+    /* Disables the grey tap flash on mobile WebKit; focus is styled instead. */
+    -webkit-tap-highlight-color: transparent;
+    /* Bars of an installed PWA follow the theme. */
+    background-color: var(--neu-base);
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--neu-base);
+    color: var(--fg-primary);
+    font-family: var(--font-sans), serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* No rubber-band pull-to-refresh fighting with in-app scroll areas. */
+    overscroll-behavior-y: none;
+  }
+}

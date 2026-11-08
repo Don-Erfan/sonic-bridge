@@ -1,0 +1,78 @@
+/*
+ * Neumorphism (soft UI) — the design language of the app.
+ *
+ * Every surface is the *same colour* as the page; depth comes only from a
+ * pair of shadows cast by a light source at the top-left:
+ *
+ *   raised  → highlight on the top-left edge, shade on the bottom-right
+ *   inset   → the same pair, inside the element (wells, inputs, tracks)
+ *   pressed → a shallow inset: the state of a raised control while pressed
+ *             or selected
+ *
+ *   utility              use
+ *   bg-neu               page and surface fill (identical by design)
+ *   shadow-neu-sm|-|-lg  raised: chips & small controls | cards | hero cards
+ *   shadow-neu-inset(-sm) inputs, segmented tracks, progress tracks
+ *   shadow-neu-pressed   pressed / selected raised controls
+ *   shadow-float         overlays that float *above* the page (sheets, toasts)
+ *   border-neu-outline   transparent hairline; visible with
+ *                        `prefers-contrast: more` (see below)
+ *
+ * The light source is visual, not logical: it does not flip in RTL.
+ *
+ * Accessibility: soft UI relies on subtle shadows, which low-vision users
+ * may not perceive. Text colours meet WCAG AA on `bg-neu` in both themes,
+ * interactive state never relies on shadow alone (colour + icon/label change
+ * too), and `prefers-contrast: more` adds real borders to every surface.
+ */
+@layer theme {
+  :root,
+  .light,
+  .default,
+  [data-theme='light'],
+  [data-theme='default'] {
+    --neu-base: #eceef6;
+    --neu-highlight: #ffffff;
+    --neu-shade: #c5cadc;
+    --neu-outline: transparent;
+    --float-shadow: 0 18px 40px -12px rgb(27 34 54 / 0.35);
+  }
+
+  .dark,
+  [data-theme='dark'] {
+    --neu-base: #161f33;
+    --neu-highlight: #212c45;
+    --neu-shade: #0a101d;
+    --neu-outline: transparent;
+    --float-shadow: 0 18px 40px -12px rgb(0 0 0 / 0.7);
+  }
+
+  @media (prefers-contrast: more) {
+    :root,
+    .light,
+    .dark,
+    [data-theme='light'],
+    [data-theme='dark'] {
+      --neu-outline: var(--default-400);
+    }
+  }
+}
+
+@theme inline {
+  --color-neu: var(--neu-base);
+  --color-neu-outline: var(--neu-outline);
+
+  --shadow-neu-sm:
+    3px 3px 6px var(--neu-shade), -3px -3px 6px var(--neu-highlight);
+  --shadow-neu:
+    6px 6px 14px var(--neu-shade), -6px -6px 14px var(--neu-highlight);
+  --shadow-neu-lg:
+    10px 10px 24px var(--neu-shade), -10px -10px 24px var(--neu-highlight);
+  --shadow-neu-inset-sm:
+    inset 2px 2px 4px var(--neu-shade), inset -2px -2px 4px var(--neu-highlight);
+  --shadow-neu-inset:
+    inset 4px 4px 9px var(--neu-shade), inset -4px -4px 9px var(--neu-highlight);
+  --shadow-neu-pressed:
+    inset 3px 3px 6px var(--neu-shade), inset -3px -3px 6px var(--neu-highlight);
+  --shadow-float: var(--float-shadow);
+}

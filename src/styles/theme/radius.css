@@ -1,0 +1,14 @@
+/*
+ * Corner radius scale (px-named, so specs translate literally):
+ * `rounded-8`, `rounded-12`, `rounded-16`, `rounded-20`, `rounded-24`,
+ * `rounded-28`. Soft UI reads best with large radii: cards use 24, controls
+ * 16, chips full.
+ */
+@theme {
+  --radius-8: 0.5rem;
+  --radius-12: 0.75rem;
+  --radius-16: 1rem;
+  --radius-20: 1.25rem;
+  --radius-24: 1.5rem;
+  --radius-28: 1.75rem;
+}

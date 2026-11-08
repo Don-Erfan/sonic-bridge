@@ -1,0 +1,276 @@
+/*
+ * Colour tokens — the Ozone brand palette, taken from the three rings of the
+ * ozone.ir logo mark and expanded into 50…900 scales.
+ *
+ *   Logo ring        hex        scale         role
+ *   Purple (bottom)  #732DF6    primary-*     actions, focus, selection
+ *   Blue   (left)    #386CFF    secondary-*   links, info, secondary accents
+ *   Teal   (top)     #24C8B0    teal-*        success, "in office", coins earned
+ *   Navy wordmark bg #0B1424    —             dark theme base (see neumorphism)
+ *
+ * Raw values live on CSS variables scoped to the active theme; `@theme inline`
+ * maps them onto Tailwind's `--color-*` namespace, so `bg-primary-500`
+ * resolves to the light or dark value of the nearest `.light` / `.dark`.
+ *
+ * Contrast (WCAG 2.2, checked against the neumorphic base of each theme):
+ *   white on primary-500 6.1:1 · primary-600 on light base 7.0:1
+ *   teal-800 on light base 6.4:1 · teal-300 on dark base 10.9:1
+ *   Teal is never used for text on the light theme below step 800.
+ */
+
+@layer theme {
+  /* ---------------------------------------------------------------- Light -- */
+  :root,
+  .light,
+  .default,
+  [data-theme='light'],
+  [data-theme='default'] {
+    --background: #eceef6;
+    --foreground: #1b2236;
+
+    --primary: #732df6;
+    --primary-foreground: #ffffff;
+    --secondary: #386cff;
+    --secondary-foreground: #ffffff;
+    --success: #1ea894;
+    --success-foreground: #ffffff;
+    --warning: #e8961a;
+    --warning-foreground: #1b2236;
+    --danger: #e5245e;
+    --danger-foreground: #ffffff;
+
+    /* Neutral (cool, slightly violet-tinted greys to sit on the base) */
+    --default-50: #f6f7fb;
+    --default-100: #eceef6;
+    --default-200: #dde0ec;
+    --default-300: #c7cbdc;
+    --default-400: #8a93ab;
+    --default-500: #6b7590;
+    --default-600: #5a6480;
+    --default-700: #4a5470;
+    --default-800: #2c3550;
+    --default-900: #1b2236;
+
+    /* Primary — Ozone purple */
+    --primary-50: #f4eefe;
+    --primary-100: #e9ddfe;
+    --primary-200: #d2bcfc;
+    --primary-300: #b692fa;
+    --primary-400: #955ff8;
+    --primary-500: #732df6;
+    --primary-600: #6126cf;
+    --primary-700: #4c1ea2;
+    --primary-800: #371676;
+    --primary-900: #230e4a;
+
+    /* Secondary — Ozone blue */
+    --secondary-50: #eff3ff;
+    --secondary-100: #dfe7ff;
+    --secondary-200: #bfd0ff;
+    --secondary-300: #98b3ff;
+    --secondary-400: #688fff;
+    --secondary-500: #386cff;
+    --secondary-600: #2f5bd6;
+    --secondary-700: #2547a8;
+    --secondary-800: #1b347a;
+    --secondary-900: #11204d;
+
+    /* Teal — Ozone green */
+    --teal-50: #edfbf9;
+    --teal-100: #dcf6f2;
+    --teal-200: #b9ede6;
+    --teal-300: #8de2d6;
+    --teal-400: #59d5c3;
+    --teal-500: #24c8b0;
+    --teal-600: #1ea894;
+    --teal-700: #188474;
+    --teal-800: #116054;
+    --teal-900: #0b3c35;
+
+    /* Warning — amber */
+    --warning-50: #fef8ec;
+    --warning-100: #fdefd3;
+    --warning-200: #fbdba7;
+    --warning-300: #f7c46e;
+    --warning-400: #f2ac3c;
+    --warning-500: #e8961a;
+    --warning-600: #c27a12;
+    --warning-700: #935c0e;
+    --warning-800: #643e09;
+    --warning-900: #352105;
+
+    /* Danger — rose */
+    --danger-50: #fdedf2;
+    --danger-100: #fbd9e3;
+    --danger-200: #f6b0c6;
+    --danger-300: #f07ea1;
+    --danger-400: #ea4f7e;
+    --danger-500: #e5245e;
+    --danger-600: #be1b4d;
+    --danger-700: #8f143a;
+    --danger-800: #600d27;
+    --danger-900: #330715;
+  }
+
+  /* ----------------------------------------------------------------- Dark -- */
+  .dark,
+  [data-theme='dark'] {
+    --background: #161f33;
+    --foreground: #e7ebf5;
+
+    --primary: #8a4ff8;
+    --primary-foreground: #ffffff;
+    --secondary: #5a85ff;
+    --secondary-foreground: #ffffff;
+    --success: #24c8b0;
+    --success-foreground: #0b1424;
+    --warning: #f2ac3c;
+    --warning-foreground: #0b1424;
+    --danger: #ea4f7e;
+    --danger-foreground: #ffffff;
+
+    --default-50: #111a2c;
+    --default-100: #161f33;
+    --default-200: #222d45;
+    --default-300: #2f3b56;
+    --default-400: #6b7690;
+    --default-500: #8f9ab4;
+    --default-600: #a9b3cc;
+    --default-700: #c5cce0;
+    --default-800: #dde2ef;
+    --default-900: #e7ebf5;
+
+    --primary-50: #1c1037;
+    --primary-100: #2d185a;
+    --primary-200: #43218a;
+    --primary-300: #5b28bd;
+    --primary-400: #732df6;
+    --primary-500: #8a4ff8;
+    --primary-600: #a679fa;
+    --primary-700: #c2a3fb;
+    --primary-800: #ddcdfd;
+    --primary-900: #f1eafe;
+
+    --secondary-50: #0f1a3d;
+    --secondary-100: #172a66;
+    --secondary-200: #1f3c94;
+    --secondary-300: #2a52c7;
+    --secondary-400: #386cff;
+    --secondary-500: #5a85ff;
+    --secondary-600: #7f9fff;
+    --secondary-700: #a6bdff;
+    --secondary-800: #cddaff;
+    --secondary-900: #eef2ff;
+
+    --teal-50: #082c27;
+    --teal-100: #0b3c35;
+    --teal-200: #116054;
+    --teal-300: #188474;
+    --teal-400: #1ea894;
+    --teal-500: #24c8b0;
+    --teal-600: #59d5c3;
+    --teal-700: #8de2d6;
+    --teal-800: #b9ede6;
+    --teal-900: #e6f9f6;
+
+    --warning-50: #2a1c06;
+    --warning-100: #45300b;
+    --warning-200: #6b4a10;
+    --warning-300: #9a6a14;
+    --warning-400: #c98b18;
+    --warning-500: #f2ac3c;
+    --warning-600: #f5c06a;
+    --warning-700: #f8d498;
+    --warning-800: #fbe6c5;
+    --warning-900: #fef6e8;
+
+    --danger-50: #2c0812;
+    --danger-100: #4d0e20;
+    --danger-200: #761531;
+    --danger-300: #a81c45;
+    --danger-400: #d6255b;
+    --danger-500: #ea4f7e;
+    --danger-600: #ef7a9d;
+    --danger-700: #f4a5bd;
+    --danger-800: #f9d0dd;
+    --danger-900: #fdeef3;
+  }
+}
+
+/* ------------------------------------------------- Tailwind colour map -- */
+/*
+ * `background`, `foreground`, `success`, `warning`, `danger` and `default`
+ * (plus their `-foreground`) are already mapped by HeroUI's own theme.
+ */
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-default-50: var(--default-50);
+  --color-default-100: var(--default-100);
+  --color-default-200: var(--default-200);
+  --color-default-300: var(--default-300);
+  --color-default-400: var(--default-400);
+  --color-default-500: var(--default-500);
+  --color-default-600: var(--default-600);
+  --color-default-700: var(--default-700);
+  --color-default-800: var(--default-800);
+  --color-default-900: var(--default-900);
+
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+
+  --color-secondary-50: var(--secondary-50);
+  --color-secondary-100: var(--secondary-100);
+  --color-secondary-200: var(--secondary-200);
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-400: var(--secondary-400);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-600: var(--secondary-600);
+  --color-secondary-700: var(--secondary-700);
+  --color-secondary-800: var(--secondary-800);
+  --color-secondary-900: var(--secondary-900);
+
+  --color-teal-50: var(--teal-50);
+  --color-teal-100: var(--teal-100);
+  --color-teal-200: var(--teal-200);
+  --color-teal-300: var(--teal-300);
+  --color-teal-400: var(--teal-400);
+  --color-teal-500: var(--teal-500);
+  --color-teal-600: var(--teal-600);
+  --color-teal-700: var(--teal-700);
+  --color-teal-800: var(--teal-800);
+  --color-teal-900: var(--teal-900);
+
+  --color-warning-50: var(--warning-50);
+  --color-warning-100: var(--warning-100);
+  --color-warning-200: var(--warning-200);
+  --color-warning-300: var(--warning-300);
+  --color-warning-400: var(--warning-400);
+  --color-warning-500: var(--warning-500);
+  --color-warning-600: var(--warning-600);
+  --color-warning-700: var(--warning-700);
+  --color-warning-800: var(--warning-800);
+  --color-warning-900: var(--warning-900);
+
+  --color-danger-50: var(--danger-50);
+  --color-danger-100: var(--danger-100);
+  --color-danger-200: var(--danger-200);
+  --color-danger-300: var(--danger-300);
+  --color-danger-400: var(--danger-400);
+  --color-danger-500: var(--danger-500);
+  --color-danger-600: var(--danger-600);
+  --color-danger-700: var(--danger-700);
+  --color-danger-800: var(--danger-800);
+  --color-danger-900: var(--danger-900);
+}

@@ -22,7 +22,7 @@ cp .env.example .env.local
 yarn dev
 ```
 
-Without `NEXT_PUBLIC_BASE_API` (or with `NEXT_PUBLIC_USE_MOCK_API=true`), the whole app runs against an **in-browser mock backend**. The mock persists to `localStorage` and enforces the same rules as the real one. In mock mode the check-in card also shows a **"simulate face check-in"** button, which stands in for the entrance gate.
+The app talks to the staff API (`NEXT_PUBLIC_BASE_API`, the .NET service in `~/DotNetProj/myOzoneDotNet`), so start that first. There is no offline or mock backend. API documentation with a working "Try it out": <http://localhost:5080/swagger>.
 
 | Script           | What it does                              |
 | ---------------- | ----------------------------------------- |
@@ -62,9 +62,8 @@ src/
 │   └── query/ utils/       query client & keys, date/format/text helpers
 ├── services/
 │   ├── interceptor/        vendored HTTP layer (unchanged from ai-agent)
-│   ├── factory/            Abstract Factory: HTTP or mock service family
-│   ├── mock/               mock database + seed data
-│   └── <feature>/          interface · *.service.ts (HTTP) · *.mock.ts
+│   ├── factory/            constructs the service instances
+│   └── <feature>/          interface · *.service.ts (HTTP)
 └── styles/theme/           design tokens (Tailwind v4, CSS-first)
 public/sw.js                service worker
 ```
@@ -109,13 +108,13 @@ public/sw.js                service worker
 | Rule                                                                                                          | Code                                  |
 | ------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | 100 coins for the first face check-in of a local day                                                          | `lib/coins/reward.ts`                 |
-| "In office" is set only by the gate; remote/leave are self-declared, and are rejected once checked in         | `lib/presence`, `attendance.mock.ts`  |
+| "In office" is set only by the gate; remote/leave are self-declared, and are rejected once checked in         | `lib/presence`, backend `AttendanceDay` |
 | Purchase checks: active → quantity → stock → per-person limit → balance                                       | `lib/coins/purchase.ts`               |
-| Room state (available / upcoming ≤30 min / occupied), bookings 15–180 min, never across midnight, no overlaps | `lib/rooms/rooms.ts`, `rooms.mock.ts` |
-| Only the organiser can release (end now) or cancel a booking                                                  | `rooms.mock.ts`                       |
+| Room state (available / upcoming ≤30 min / occupied), bookings 15–180 min, never across midnight, no overlaps | `lib/rooms/rooms.ts`, backend `BookingPolicy` |
+| Only the organiser can release (end now) or cancel a booking                                                  | backend `RoomBooking`                 |
 | Mood note ≤ 100 characters (the Mattermost limit), expiry in the future                                       | `lib/mood`, API route                 |
 
-The UI pre-validates with these rules, but **the server is authoritative**. The mock backend re-runs them against stored state, and the real backend must do the same.
+The UI pre-validates with these rules, but **the server is authoritative**: the backend re-runs them against stored state.
 
 ## Backend API contract
 
@@ -147,7 +146,7 @@ Responses use the envelope `{ code, data, detail }` (`INetworkResponse`). Every 
 2. Clear any remote/leave declaration.
 3. Credit the daily reward at most once per day (idempotent).
 
-`FaceCheckInMockSimulator` shows exactly this behaviour. The app finds out by polling `attendance/today` every 30 s until a check-in arrives.
+The app finds out by polling `attendance/today` every 30 s until a check-in arrives.
 
 ## Mattermost integration
 
@@ -190,11 +189,11 @@ Every catalogue pattern was considered. Each one is applied only where it solves
 
 | Pattern                 | Where                                                                                                                                        |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Abstract Factory        | `services/factory`: the HTTP and mock service families can never be mixed                                                                    |
+| Abstract Factory        | `services/factory`: the one place the API services are constructed                                                                          |
 | Factory Method          | `createQueryClient()`, `createPurchaseValidator()`                                                                                           |
 | Builder                 | `MattermostStatusBuilder`; `new HttpClient().use(…).boot()`                                                                                  |
-| Prototype               | `clone()` (structured clone) in the mock backend: callers get copies, never live state                                                       |
-| Singleton               | `themeStore`, `clockStore`, `installPromptStore`, `mockDb`, browser `QueryClient`, service instances                                         |
+| Prototype               | Not needed: server data is immutable query data, never cloned and mutated                                                                    |
+| Singleton               | `themeStore`, `clockStore`, `installPromptStore`, browser `QueryClient`, service instances                                         |
 | Adapter                 | `HttpClient` over axios; `MattermostClient` over `fetch`; `heroui.css` over HeroUI tokens; `notify` options to HeroUI toast options          |
 | Bridge                  | Base components (abstraction) over HeroUI and React Aria (implementation), so either side can change independently                           |
 | Composite               | `CompositeStatusSync`: mood sync targets (Mattermost today) treated as one                                                                   |
@@ -205,7 +204,7 @@ Every catalogue pattern was considered. Each one is applied only where it solves
 | Chain of Responsibility | Purchase validation chain; interceptor middleware pipeline                                                                                   |
 | Command                 | TanStack mutations: encapsulated, retry-able requests with optimistic apply and rollback (RSVP)                                              |
 | Iterator                | Not hand-rolled: native iterables and array methods already cover traversal                                                                  |
-| Mediator                | `mockDb`: features interact through it (check-in → wallet + presence; purchase → stock + ledger + orders)                                    |
+| Mediator                | The TanStack `QueryClient`: features coordinate through it (a purchase refreshes the store and the wallet)                                   |
 | Memento                 | The optimistic RSVP snapshot (`onMutate` saves the previous list, `onError` restores it)                                                     |
 | Observer                | `useSyncExternalStore` stores (theme, clock, install prompt, online status); TanStack Query observers; the mutation cache re-ticks the clock |
 | State                   | `lib/rooms`: available / upcoming / occupied state objects decide tone and allowed actions                                                   |

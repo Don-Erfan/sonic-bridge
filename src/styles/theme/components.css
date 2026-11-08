@@ -1,0 +1,167 @@
+/*
+ * Semantic component tokens. Components reference these — never raw scale
+ * steps — so a palette change is a one-file edit. Most tokens point at a
+ * scale step; because the dark scales are mirrored (50 ↔ 900), the same step
+ * reads correctly in both themes.
+ *
+ *   token                         utility
+ *   Text primary … quaternary     text-fg-primary … text-fg-quaternary
+ *   Accent text / icon            text-accent-fg
+ *   Tone <t> (badge fill / text)  bg-tone-<t>  text-tone-<t>-fg
+ *     t = primary | info | success | warning | danger | neutral
+ *   Presence dot                  bg-presence-in-office | -remote | -on-leave | -out
+ *   Coin                          text-coin, bg-coin-gradient (see utilities)
+ *   Brand gradient                bg-brand-gradient (purple → blue → teal)
+ */
+@layer theme {
+  :root,
+  .light,
+  .default,
+  .dark,
+  [data-theme='light'],
+  [data-theme='default'],
+  [data-theme='dark'] {
+    --fg-primary: var(--default-900);
+    --fg-secondary: var(--default-700);
+    --fg-tertiary: var(--default-600);
+    --fg-quaternary: var(--default-400);
+    --accent-fg: var(--primary-600);
+
+    --tone-primary: var(--primary-100);
+    --tone-primary-fg: var(--primary-700);
+    --tone-info: var(--secondary-100);
+    --tone-info-fg: var(--secondary-700);
+    --tone-success: var(--teal-100);
+    --tone-success-fg: var(--teal-800);
+    --tone-warning: var(--warning-100);
+    --tone-warning-fg: var(--warning-800);
+    --tone-danger: var(--danger-100);
+    --tone-danger-fg: var(--danger-700);
+    --tone-neutral: var(--default-200);
+    --tone-neutral-fg: var(--default-700);
+
+    --presence-in-office: var(--teal-500);
+    --presence-remote: var(--secondary-500);
+    --presence-on-leave: var(--warning-500);
+    --presence-out: var(--default-400);
+
+    --coin: #c27a12;
+    --coin-light: #f7c46e;
+    --coin-dark: #b8700f;
+
+    --brand-purple: #732df6;
+    --brand-blue: #386cff;
+    --brand-teal: #24c8b0;
+    --brand-navy: #0b1424;
+  }
+
+  .dark,
+  [data-theme='dark'] {
+    --accent-fg: var(--primary-700);
+    --coin: #f5c06a;
+  }
+}
+
+@theme inline {
+  --color-fg-primary: var(--fg-primary);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-tertiary: var(--fg-tertiary);
+  --color-fg-quaternary: var(--fg-quaternary);
+  --color-accent-fg: var(--accent-fg);
+
+  --color-tone-primary: var(--tone-primary);
+  --color-tone-primary-fg: var(--tone-primary-fg);
+  --color-tone-info: var(--tone-info);
+  --color-tone-info-fg: var(--tone-info-fg);
+  --color-tone-success: var(--tone-success);
+  --color-tone-success-fg: var(--tone-success-fg);
+  --color-tone-warning: var(--tone-warning);
+  --color-tone-warning-fg: var(--tone-warning-fg);
+  --color-tone-danger: var(--tone-danger);
+  --color-tone-danger-fg: var(--tone-danger-fg);
+  --color-tone-neutral: var(--tone-neutral);
+  --color-tone-neutral-fg: var(--tone-neutral-fg);
+
+  --color-presence-in-office: var(--presence-in-office);
+  --color-presence-remote: var(--presence-remote);
+  --color-presence-on-leave: var(--presence-on-leave);
+  --color-presence-out: var(--presence-out);
+
+  --color-coin: var(--coin);
+
+  --color-brand-purple: var(--brand-purple);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-teal: var(--brand-teal);
+  --color-brand-navy: var(--brand-navy);
+}
+
+/* Brand gradient of the logo rings, for hero surfaces and the primary CTA. */
+@utility bg-brand-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--brand-purple) 0%,
+    var(--brand-blue) 58%,
+    var(--brand-teal) 100%
+  );
+}
+
+/* Purple → blue: the primary button fill (white text ≥ 4.4:1 everywhere). */
+@utility bg-action-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--brand-purple) 0%,
+    #5a4dfb 55%,
+    var(--brand-blue) 100%
+  );
+}
+
+@utility bg-coin-gradient {
+  background-image: radial-gradient(
+    circle at 30% 30%,
+    var(--coin-light) 0%,
+    #e8961a 60%,
+    var(--coin-dark) 100%
+  );
+}
+
+/* Hides scrollbars on horizontally scrolling chip rows (still scrollable). */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Bottom padding that clears the tab bar plus the iOS home indicator. */
+@utility pb-safe-nav {
+  padding-bottom: calc(
+    var(--bottom-nav-height) + env(safe-area-inset-bottom) + 1rem
+  );
+}
+
+@layer theme {
+  :root {
+    --bottom-nav-height: 4.5rem;
+  }
+}
+
+/*
+ * Motion. `ease-spring` approximates a light spring (used by the tab bar
+ * indicator and sheet content); everything respects `prefers-reduced-motion`
+ * through Tailwind's `motion-reduce:` variant at the call site.
+ */
+@theme {
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-pop: pop 420ms var(--ease-spring) both;
+
+  @keyframes pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}

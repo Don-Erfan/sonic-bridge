@@ -1,0 +1,9 @@
+.next
+node_modules
+.yarn
+yarn.lock
+next-env.d.ts
+# Vendored from the shared Interceptor package — keep its own formatting.
+src/services/interceptor
+# Shared conventions doc, kept verbatim.
+Structure.md

@@ -1,0 +1,59 @@
+/*
+ * HeroUI v3 bridge (Adapter): points HeroUI's semantic variables at the Ozone
+ * tokens declared in `colors.css` / `neumorphism.css` / `components.css`, so
+ * every HeroUI component — wrapped by `src/components/base` or used directly —
+ * renders in the project theme.
+ *
+ *   HeroUI variable     ← token
+ *   --accent            ← primary (Ozone purple)
+ *   --surface(-*)       ← neu base (soft UI surfaces share the page colour)
+ *   --overlay           ← neu base (sheets, popovers, dialogs)
+ *   --focus             ← primary-500
+ *   --field-*           ← neu base + inset shadow
+ */
+@layer theme {
+  :root,
+  .light,
+  .default,
+  .dark,
+  [data-theme='light'],
+  [data-theme='default'],
+  [data-theme='dark'] {
+    --accent: var(--primary);
+    --accent-foreground: var(--primary-foreground);
+
+    --surface: var(--neu-base);
+    --surface-foreground: var(--fg-primary);
+    --surface-secondary: var(--default-200);
+    --surface-secondary-foreground: var(--fg-primary);
+    --surface-tertiary: var(--default-300);
+    --surface-tertiary-foreground: var(--fg-primary);
+
+    --overlay: var(--neu-base);
+    --overlay-foreground: var(--fg-primary);
+    --overlay-shadow: var(--float-shadow);
+
+    --default: var(--default-200);
+    --default-foreground: var(--default-900);
+    --muted: var(--default-600);
+
+    --border: var(--default-300);
+    --separator: var(--default-300);
+    --focus: var(--primary-500);
+
+    --field-background: var(--neu-base);
+    --field-foreground: var(--fg-primary);
+    --field-placeholder: var(--fg-quaternary);
+    --field-border: transparent;
+    --field-border-width: 0px;
+    --field-hover: var(--neu-base);
+    --field-border-hover: transparent;
+    --field-focus: var(--neu-base);
+    --field-border-focus: var(--focus);
+    --field-shadow: none;
+
+    /* Soft UI favours generous rounding; HeroUI derives its scale from this:
+       rounded-sm 6 · rounded-lg 12 · rounded-xl 18 · rounded-2xl 24. */
+    --radius: 0.75rem;
+  }
+}

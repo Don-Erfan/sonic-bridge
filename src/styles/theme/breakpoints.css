@@ -1,0 +1,16 @@
+/*
+ * Breakpoints — mobile first. The base styles target phones (360–430px);
+ * larger screens only *add* layout:
+ *
+ *   Tailwind   min-width   layout change
+ *   sm:        40rem 640   two-column grids
+ *   md:        48rem 768   tablet: wider gutters
+ *   lg:        64rem 1024  desktop: side rail replaces the bottom tab bar
+ *   xl:        80rem 1280  three-column grids
+ */
+@theme {
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+}
